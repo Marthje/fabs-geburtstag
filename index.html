@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hey Fabs!</title>
+<style>
+body{margin:0;background:#2e4d2f;font-family:Arial,sans-serif}
+.wrap{max-width:430px;margin:auto;background:#f6efdf;min-height:100vh;overflow:hidden}
+header{background:#6f4a28;color:#fff;padding:22px;text-align:center;font-size:2.2em;font-weight:bold}
+.sub{text-align:center;padding:14px;color:#5a3b1d}
+.course{position:relative;height:560px;margin:14px;background:linear-gradient(#8ecf67,#69a64c);border:12px solid #7a5633;border-radius:18px}
+.course:before,.course:after{content:"";position:absolute;top:0;bottom:0;width:16px;background:#8b6239}
+.course:before{left:0}.course:after{right:0}
+.obs{position:absolute;font-size:42px}
+#a{left:55px;top:110px}#b{right:55px;top:210px}#c{left:80px;top:330px}#d{right:70px;top:430px}
+#hole{position:absolute;top:35px;left:50%;transform:translateX(-50%);width:34px;height:34px;border-radius:50%;background:#111}
+#flag{position:absolute;top:2px;left:50%;transform:translateX(10px);font-size:28px}
+#ball{position:absolute;width:34px;height:34px;border-radius:50%;background:#fff;left:195px;bottom:18px;box-shadow:0 2px 8px #0006;touch-action:none}
+.card{position:fixed;left:50%;transform:translate(-50%,-50%);width:min(92vw,400px);border-radius:16px;padding:18px;box-sizing:border-box;text-align:center;display:none;z-index:100}
+#success{top:50%;background:#6f4a28;color:#fff}
+#voucher{top:50%;background:#fff;border:4px solid #8b6239;color:#333}
+#lock{font-size:58px;cursor:pointer;animation:pulse 1s infinite}
+@keyframes pulse{50%{transform:scale(1.08)}}
+.conf{position:fixed;inset:0;pointer-events:none}.p{position:absolute;width:9px;height:12px}
+</style></head><body>
+<div class="wrap">
+<header>🪵 Hey Fabs! 🪵</header>
+<div class="sub"><h3>Herzlichen Glückwunsch! 🎉</h3><p>Ziehe den Ball bis ins Loch – danach wartet dein Geschenk.</p></div>
+<div class="course" id="course">
+<div id="flag">🚩</div><div id="hole"></div>
+<div class="obs" id="a">🪨</div><div class="obs" id="b">🪵</div><div class="obs" id="c">🛢️</div><div class="obs" id="d">🪨</div>
+<div id="ball"></div></div></div>
+<div class="card" id="success"><h2>🎉 Geschafft! 🎉</h2><p><b>Tippe auf das Schloss, um dein Geschenk zu öffnen.</b></p><div id="lock">🔒</div></div>
+<div class="card" id="voucher">
+<h2>🎁 Gutschein</h2>
+<p><b>Für eine gemeinsame Runde<br>Adventure Golf<br>inklusive Kaffee &amp; Kuchen im Hofladen.</b></p><hr>
+<p><b>Hey Fabs,</b><br>herzlichen Glückwunsch zum Geburtstag! Hab einen wunderschönen Tag.<br>Ich freue mich riesig auf unseren gemeinsamen Urlaub und unser Golf-Abenteuer! 🎉</p>
+</div>
+<div class="conf" id="conf"></div>
+<script>
+const ball=document.getElementById('ball'),hole=document.getElementById('hole'),course=document.getElementById('course');
+let drag=false,ox=0,oy=0,done=false;
+ball.addEventListener('pointerdown',e=>{drag=true;const r=ball.getBoundingClientRect();ox=e.clientX-r.left;oy=e.clientY-r.top;});
+window.addEventListener('pointermove',e=>{
+ if(!drag||done)return;
+ const c=course.getBoundingClientRect();
+ let x=Math.max(0,Math.min(c.width-34,e.clientX-c.left-ox));
+ let y=Math.max(0,Math.min(c.height-34,e.clientY-c.top-oy));
+ ball.style.left=x+'px'; ball.style.top=y+'px'; ball.style.bottom='auto';
+ const b=ball.getBoundingClientRect(),h=hole.getBoundingClientRect();
+ if(Math.hypot((b.left+17)-(h.left+17),(b.top+17)-(h.top+17))<28){
+   done=true;drag=false;ball.style.display='none';
+   setTimeout(()=>success.style.display='block',300);
+ }
+},{passive:true});
+window.addEventListener('pointerup',()=>drag=false);
+lock.addEventListener('click',()=>{
+ success.style.display='none';
+ lock.textContent='🔓';
+ for(let i=0;i<180;i++){
+   let p=document.createElement('div');
+   p.className='p';
+   p.style.left='50vw';p.style.top='50vh';
+   p.style.background=`hsl(${Math.random()*360},90%,60%)`;
+   let dx=(Math.random()-0.5)*600,dy=(Math.random()-0.5)*600;
+   p.animate([{transform:'translate(0,0)',opacity:1},{transform:`translate(${dx}px,${dy}px)`,opacity:0}],{duration:1200});
+   conf.appendChild(p);
+ }
+ setTimeout(()=>voucher.style.display='block',350);
+},{once:true});
+</script></body></html>
