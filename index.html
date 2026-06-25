@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fabs Adventure Golf</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#2d4a2e;color:#fff}
+.wrap{max-width:420px;margin:auto;background:#f2ebd9;min-height:100vh;color:#2d2d2d}
+header{background:#6d4b2a;color:#fff;padding:22px;text-align:center;font-size:2.2em;font-weight:bold}
+.sub{padding:16px;text-align:center}
+.course{position:relative;height:520px;background:linear-gradient(#8cc56b,#6ea44e);margin:14px;border:10px solid #7b5732;border-radius:8px;overflow:hidden}
+.obs{position:absolute;background:#8b6b45;border-radius:50%}
+.o1{width:70px;height:70px;left:55px;top:120px}
+.o2{width:55px;height:55px;right:60px;top:180px}
+.o3{width:75px;height:75px;left:95px;top:290px}
+.o4{width:60px;height:60px;right:85px;top:355px}
+#hole{position:absolute;top:35px;left:50%;transform:translateX(-50%);width:34px;height:34px;border-radius:50%;background:#111}
+#flag{position:absolute;top:5px;left:50%;transform:translateX(8px);font-size:28px}
+#ball{position:absolute;width:34px;height:34px;border-radius:50%;background:white;left:190px;bottom:18px;box-shadow:0 2px 6px #0006;touch-action:none}
+.note{text-align:center;font-size:.95em}
+.hidden{display:none}
+#success,#voucher{margin:16px;border-radius:12px;padding:18px}
+#success{background:#6d4b2a;color:#fff;text-align:center}
+#lock{font-size:54px;cursor:pointer}
+#voucher{background:#fff;border:3px solid #6d4b2a;text-align:center}
+.conf{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.p{position:absolute;width:8px;height:14px;animation:f 2s linear forwards}
+@keyframes f{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>Hey Fabs!</header>
+<div class="sub">
+<p>Eine kleine Challenge wartet auf dich, bevor du dein Geschenk entdecken kannst!</p>
+<b>Ziehe den Ball mit dem Finger zum Loch.</b>
+</div>
+
+<div class="course" id="course">
+<div id="flag">🚩</div>
+<div id="hole"></div>
+<div class="obs o1"></div><div class="obs o2"></div><div class="obs o3"></div><div class="obs o4"></div>
+<div id="ball"></div>
+</div>
+<div class="note">Ziehe den Ball bis ins Loch ⛳</div>
+
+<div id="success" class="hidden">
+<h2>Geschafft! 🎉</h2>
+<p>Du hast den Ball versenkt.</p>
+<div id="lock">🔒</div>
+<p>Tippe auf das Schloss.</p>
+</div>
+
+<div id="voucher" class="hidden">
+<h2>🎁 Dein Geschenk</h2>
+<h3>Gutschein für eine Runde Adventure Golf</h3>
+<p>inklusive Kaffee und Kuchen im Hofladen ☕🍰</p>
+<hr>
+<p><b>Hey Fabs,</b><br>
+herzlichen Glückwunsch zum Geburtstag, hab einen tollen Tag, ich freue mich auf den gemeinsamen Urlaub und unser Golf-Abenteuer! ❤️</p>
+</div>
+</div>
+<div class="conf" id="conf"></div>
+<script>
+const ball=document.getElementById('ball');
+const hole=document.getElementById('hole');
+let drag=false,offX=0,offY=0;
+ball.addEventListener('pointerdown',e=>{
+ drag=true; ball.setPointerCapture(e.pointerId);
+ const r=ball.getBoundingClientRect(); offX=e.clientX-r.left; offY=e.clientY-r.top;
+});
+ball.addEventListener('pointermove',e=>{
+ if(!drag)return;
+ const c=document.getElementById('course').getBoundingClientRect();
+ let x=e.clientX-c.left-offX, y=e.clientY-c.top-offY;
+ x=Math.max(0,Math.min(c.width-34,x)); y=Math.max(0,Math.min(c.height-34,y));
+ ball.style.left=x+'px'; ball.style.top=y+'px'; ball.style.bottom='auto';
+ const br=ball.getBoundingClientRect(), hr=hole.getBoundingClientRect();
+ const bx=br.left+17, by=br.top+17, hx=hr.left+17, hy=hr.top+17;
+ if(Math.hypot(bx-hx,by-hy)<28){
+   document.getElementById('success').classList.remove('hidden');
+ }
+});
+ball.addEventListener('pointerup',()=>drag=false);
+document.getElementById('lock').onclick=()=>{
+ const c=document.getElementById('conf');
+ for(let i=0;i<120;i++){
+   let d=document.createElement('div'); d.className='p';
+   d.style.left=Math.random()*100+'vw';
+   d.style.top='-20px';
+   d.style.background=`hsl(${Math.random()*360},90%,60%)`;
+   d.style.animationDelay=(Math.random()*0.5)+'s';
+   c.appendChild(d);
+ }
+ document.getElementById('voucher').classList.remove('hidden');
+};
+</script>
+</body></html>
